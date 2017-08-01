@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+//static file directory
+app.use( express.static("public"));
+
 //allows us to access POST request parameters
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -56,12 +59,29 @@ function generateRandomString(){
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
   longURL: urlDatabase[req.params.id] };
-  res.render("urls_show", templateVars);
+  res.redirect("urls_show", templateVars);
 });
 
-//about page
-app.get('/about', (req, res) => {
-  res.render('pages/about');
+//redirect short links
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  if (longURL == undefined) {
+    console.log("Client entered an incorrect shortURL")
+    res.send("You entered an incorrect shortURL!\n")
+  } else {console.log(`Redirected client to: ${longURL}`)
+  res.redirect(longURL);
+  }
+});
+
+//custom 404 page
+app.use((req, res, next) =>{
+  res.status(404);
+  res.format({
+    html: function(){
+      res.render('404', {url: req.url})
+    }
+  })
+  console.log("User requested a page which does not exist");
 });
 
 app.listen(8080);
