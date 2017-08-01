@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% include ./partials/head %>
+</head>
+<body>
+  <ul>
+    <% for (let i in urls) { %>
+    <li> <%= i %> - <%= urls[i] %> </li>
+    <% } %>
+  </ul>
+</body>
+</html>
