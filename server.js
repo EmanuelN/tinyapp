@@ -15,8 +15,10 @@ app.set('view engine', 'ejs');
 
 //our list of URLS
 const urlDatabase = {
-  'b2xVn2': "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  'b2xVn2': {longURL: "http://www.lighthouselabs.ca",
+  userID: 'none'},
+  "9sm5xK": {longURL: "http://www.google.com",
+  userID: 'none'}
 };
 
 // users list
@@ -67,9 +69,10 @@ res.redirect("/urls");
 
 //add urls POST
 app.post('/urls', (req, res) => {
-  console.log("POST happened at /urls")
+  console.log(`User ${req.cookies.user_id} created a new url`)
   let id = generateRandomString()
-  urlDatabase[id] = req.body.longURL
+  urlDatabase[id] = {longURL: req.body.longURL,
+    userID: req.cookies.user_id}
   let templateVars = { shortURL: id,
     longURL: req.body.longURL,
     user: users[req.cookies.user_id]
@@ -138,7 +141,7 @@ app.post('/urls/:id/update', (req, res) =>{
 
 //redirect short links
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   if (longURL == undefined) {
     console.log("Client entered an incorrect shortURL")
     res.send("You entered an incorrect shortURL!\n")
