@@ -3,6 +3,10 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+
+//bcrypt
+const bcrypt = require('bcrypt');
+
 //static file directory
 app.use( express.static("public"));
 
@@ -15,24 +19,12 @@ app.set('view engine', 'ejs');
 
 //our list of URLS
 const urlDatabase = {
-  'b2xVn2': {longURL: "http://www.lighthouselabs.ca",
-  userID: 'none'},
-  "9sm5xK": {longURL: "http://www.google.com",
-  userID: 'none'}
+
 };
 
 // users list
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
+
 };
 
 //index page
@@ -104,7 +96,7 @@ app.post('/login', (req, res) => {
   }
   for (let i in users){
     if (req.body.email === users[i].email){
-      if(req.body.password === users[i].password){
+      if(bcrypt.compareSync(req.body.password, users[i].password)){
         res.cookie("user_id", i);
         res.redirect('/')
       }
@@ -192,10 +184,14 @@ app.post('/register', (req, res) =>{
     }
   }
   //else create user
+  let password = req.body.password; // you will probably this from req.params
+  let hashed_password = bcrypt.hashSync(password, 10);
   let user = {id: generateRandomString(),
     email: req.body.email,
-    password: req.body.password
+    password: hashed_password
   };
+  console.log(password)
+  console.log(user.password)
   users[user.id] = user;
   res.cookie('user_id', user.id);
   res.redirect('/urls');
