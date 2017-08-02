@@ -16,7 +16,6 @@ const urlDatabase = {
   'b2xVn2': "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-//use res.render to load up an ejs view file
 
 //index page
 app.get("/", (req,res) =>{
@@ -58,12 +57,24 @@ function generateRandomString(){
 //single url page with 404 functionality
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]){
-    res.redirect("../404")
+    res.redirect("/404")
   } else {
   let templateVars = { shortURL: req.params.id,
   longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
   }
+});
+
+//delete URL resource
+app.post('/urls/:id/delete', (req, res) =>{
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls')
+});
+
+//modify URL resource
+app.post('/urls/:id/update', (req, res) =>{
+  urlDatabase[req.params.id] = req.body.url;
+  res.redirect(`/urls/${req.params.id}`);
 });
 
 //redirect short links
@@ -77,15 +88,14 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+app.get("/404", (req, res) => {
+  res.render('404');
+});
+
 //custom 404 page
 app.use((req, res, next) =>{
-  res.status(404);
-  res.format({
-    html: function(){
-      res.render('404', {url: req.url})
-    }
-  })
-  console.log("User requested a page which does not exist");
+  console.log(`Client requested ${req.url}, giving them 404`)
+  res.redirect('/404')
 });
 
 app.listen(8080);

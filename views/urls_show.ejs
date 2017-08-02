@@ -8,5 +8,9 @@
     <% include ./partials/_header %>
   </header>
   <p><%= shortURL %> - <%= longURL %></p>
+  <form method="POST" action="/urls/<%= shortURL %>/update">
+      Updated long URL: <input type="text" name="url">
+      <button name="edit">Edit</button>
+    </form>
 </body>
 </html>
