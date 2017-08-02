@@ -76,14 +76,26 @@ app.post('/urls', (req, res) => {
 
 //handle login POST
 app.post('/login', (req, res) => {
-  if (req.body.username != ""){
-  console.log(`User logged in with username ${req.body.username}`);
-  res.cookie('username', req.body.username);
-    res.redirect('/urls');
+  if (req.body.email != "" || req.body.password != ""){
+  console.log(`User ${req.body.email} is attempting to log in`);
   }
-  else {
-    res.redirect('/urls');
+  for (let i in users){
+    if (req.body.email === users[i].email){
+      if(req.body.password === users[i].password){
+        res.cookie("user_id", i);
+        res.redirect('/')
+      }
+      else {
+        res.status(403).send("wrong password!")
+      }
+    }
   }
+   res.status(403).send("wrong email!")
+});
+
+//handle login page GET
+app.get("/login", (req, res) => {
+  res.render("login")
 });
 
 //generate random String Function
