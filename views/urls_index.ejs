@@ -11,6 +11,7 @@
     <% for (let i in urls) { %>
     <li> <%= i %> - <%= urls[i] %>
     <form method="POST" action="/urls/<%= i %>/delete">
+      <a href="/urls/<%= i %>">Edit</a>
       <button name="delete">Delete</button>
     </form>
     </li>
