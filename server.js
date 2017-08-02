@@ -78,9 +78,9 @@ app.get('/urls/new', (req, res) => {
 
 //handle logout POST
 app.post("/logout", (req, res) => {
-console.log(`User logged out from ${req.cookies['user_id']}`);
-res.clearCookie('user_id');
-res.redirect("/urls");
+  console.log(`User logged out from ${req.cookies['user_id']}`);
+  res.clearCookie('user_id');
+  res.redirect("/urls");
 });
 
 //add urls POST
