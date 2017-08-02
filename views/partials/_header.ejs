@@ -5,14 +5,14 @@
 </h1>
 
 <!-- login form -->
-<% if (username) { %>
-<p>Currently logged in as: <%= username %> </p>
+<% if (user) { %>
+<p>Currently logged in as: <%= user.email %> </p>
 <form method="POST" action="/logout">
   <button name="logout">Logout</button>
 </form>
 <% } else{ %>
 <form method="POST" action="/login">
-  Username: <input type="text" name="username">
+  User ID: <input type="text" name="userid">
   <button name="submit">Login</button>
 </form>
 <% } %>
