@@ -138,6 +138,17 @@ app.get("/register", (req, res) =>{
 
 //registration POST
 app.post('/register', (req, res) =>{
+  //if email or password is empty return error 400
+  if (req.body.email == "" || req.body.password == ""){
+    res.status(400).send("You need to fill both those fields!")
+  } else {
+    //if email already registered return error 400
+  for (let i in users){
+    if (users[i].email === req.body.email){
+      res.status(400).end("Email already registered!")
+    }
+  }
+  //else create user
   let user = {id: generateRandomString(),
     email: req.body.email,
     password: req.body.password
@@ -145,7 +156,7 @@ app.post('/register', (req, res) =>{
   users[user.id] = user;
   res.cookie('username', user.id);
   res.redirect('/urls');
-  console.log(users)
+  }
 });
 
 //404 render
