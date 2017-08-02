@@ -4,10 +4,12 @@
   <% include ./partials/_head %>
 </head>
 <body>
+  <h2>Please login to access this functionality</h2>
   <form method="POST" action="/login">
       Email: <input type="email" name="email">
       Password: <input type="password" name="password">
       <button name="login">Login</button>
   </form>
+  <h3>If you don't have an account, click <a href="/register">here</a></h3>
 </body>
 </html>

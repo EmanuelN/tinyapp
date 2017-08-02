@@ -43,9 +43,13 @@ app.get("/", (req,res) =>{
 
 //urls page
 app.get('/urls', (req, res) =>{
-  let templateVars = { urls: urlDatabase,
-  user: users[req.cookies.user_id] };
-  res.render("urls_index", templateVars);
+  if (req.cookies.user_id){
+    let templateVars = { urls: urlDatabase,
+    user: users[req.cookies.user_id] };
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/login")
+  }
 });
 
 //add urls page
