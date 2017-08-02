@@ -3,3 +3,16 @@
 <h1>
     TinyApp
 </h1>
+
+<!-- login form -->
+<% if (username) { %>
+<p>Currently logged in as: <%= username %> </p>
+<form method="POST" action="/logout">
+  <button name="logout">Logout</button>
+</form>
+<% } else{ %>
+<form method="POST" action="/login">
+  Username: <input type="text" name="username">
+  <button name="submit">Login</button>
+</form>
+<% } %>

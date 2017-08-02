@@ -1,7 +1,8 @@
 //server.js
 const express = require('express');
 const app = express();
-
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 //static file directory
 app.use( express.static("public"));
 
@@ -12,6 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //set view engine to ejs
 app.set('view engine', 'ejs');
 
+//our list of URLS
 const urlDatabase = {
   'b2xVn2': "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -19,29 +21,55 @@ const urlDatabase = {
 
 //index page
 app.get("/", (req,res) =>{
+  console.log('Cookies:', req.cookies);
   res.end("Hello!\n");
 });
 
 //urls page
 app.get('/urls', (req, res) =>{
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase,
+  username: req.cookies['username'] };
   res.render("urls_index", templateVars);
 });
 
 //add urls page
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  let templateVars = {
+    username: req.cookies['username']
+  };
+  res.render('urls_new', templateVars);
+});
+
+//handle logout POST
+app.post("/logout", (req, res) => {
+console.log(`User logged out from ${req.cookies['username']}`);
+res.clearCookie('username');
+res.redirect("/urls");
 });
 
 //add urls POST
 app.post('/urls', (req, res) => {
-  console.log(req.body)
+  console.log("POST happened at /urls")
   let id = generateRandomString()
   urlDatabase[id] = req.body.longURL
   let templateVars = { shortURL: id,
-    longURL: req.body.longURL};
+    longURL: req.body.longURL,
+    username: req.cookies['username']
+    };
     //redirect to id's page
   res.render('urls_show', templateVars);
+});
+
+//handle login POST
+app.post('/login', (req, res) => {
+  if (req.body.username != ""){
+  console.log(`User logged in with username ${req.body.username}`);
+  res.cookie('username', req.body.username);
+    res.redirect('/urls');
+  }
+  else {
+    res.redirect('/urls');
+  }
 });
 
 //generate random String Function
@@ -60,7 +88,8 @@ app.get("/urls/:id", (req, res) => {
     res.redirect("/404")
   } else {
   let templateVars = { shortURL: req.params.id,
-  longURL: urlDatabase[req.params.id] };
+  longURL: urlDatabase[req.params.id],
+  username: req.cookies['username'] };
   res.render("urls_show", templateVars);
   }
 });
