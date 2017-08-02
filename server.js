@@ -41,10 +41,21 @@ app.get("/", (req,res) =>{
   res.end("Hello!\n");
 });
 
+//user function
+function urlsForUser(id){
+  let obj = {}
+  for (let i in urlDatabase){
+    if (id === urlDatabase[i].userID){
+      obj[i] = urlDatabase[i].longURL;
+    }
+  }
+  return obj;
+}
+
 //urls page
 app.get('/urls', (req, res) =>{
   if (req.cookies.user_id){
-    let templateVars = { urls: urlDatabase,
+    let templateVars = { urls: urlsForUser(req.cookies.user_id),
       user: users[req.cookies.user_id]
     };
     res.render("urls_index", templateVars);
