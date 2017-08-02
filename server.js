@@ -55,11 +55,15 @@ function generateRandomString(){
   return randomStr;
 };
 
-//single url page
+//single url page with 404 functionality
 app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]){
+    res.redirect("../404")
+  } else {
   let templateVars = { shortURL: req.params.id,
   longURL: urlDatabase[req.params.id] };
-  res.redirect("urls_show", templateVars);
+  res.render("urls_show", templateVars);
+  }
 });
 
 //redirect short links
