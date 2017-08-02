@@ -7,7 +7,7 @@ app.use(cookieParser({
   keys: ['gdionasgionads', 'gnuiadngiudndn'],
 
   // Cookie Options
-  maxAge: 1 * 60 * 60 * 1000 // 24 hours
+  maxAge: 1 * 60 * 60 * 1000 // 1 hour
 }));
 
 //bcrypt
@@ -33,15 +33,12 @@ const users = {
 
 };
 
-//index page
 app.get("/", (req,res) =>{
-  res.redirect('/home');
-});
-app.get("/home", (req,res) => {
-  let templateVars = {
-    user: users[req.session.user_id]
-  };
-  res.render('home', templateVars);
+  if (req.session.user_id){
+    res.redirect('/urls');
+  } else{
+    res.redirect('/login')
+  }
 });
 
 //user function
