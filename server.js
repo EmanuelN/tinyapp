@@ -19,6 +19,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// users list
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 //index page
 app.get("/", (req,res) =>{
   console.log('Cookies:', req.cookies);
@@ -117,11 +131,29 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+//registration page
+app.get("/register", (req, res) =>{
+  res.render("register")
+})
+
+//registration POST
+app.post('/register', (req, res) =>{
+  let user = {id: generateRandomString(),
+    email: req.body.email,
+    password: req.body.password
+  };
+  users[user.id] = user;
+  res.cookie('username', user.id);
+  res.redirect('/urls');
+  console.log(users)
+});
+
+//404 render
 app.get("/404", (req, res) => {
   res.render('404');
 });
 
-//custom 404 page
+//custom 404 page redirect
 app.use((req, res, next) =>{
   console.log(`Client requested ${req.url}, giving them 404`)
   res.redirect('/404')
