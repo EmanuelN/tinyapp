@@ -35,7 +35,13 @@ const users = {
 
 //index page
 app.get("/", (req,res) =>{
-  res.end("Hello!\n");
+  res.redirect('/home');
+});
+app.get("/home", (req,res) => {
+  let templateVars = {
+    user: users[req.session.user_id]
+  };
+  res.render('home', templateVars);
 });
 
 //user function
@@ -57,7 +63,7 @@ app.get('/urls', (req, res) =>{
     };
     res.render("urls_index", templateVars);
   } else {
-    res.redirect("/login")
+    res.end("You must be logged in to use this feature")
   }
 });
 
@@ -76,7 +82,7 @@ app.get('/urls/new', (req, res) => {
 //handle logout POST
 app.post("/logout", (req, res) => {
   console.log(`User logged out from ${req.session['user_id']}`);
-  res.clearCookie('user_id');
+  req.session.user_id = "";
   res.redirect("/urls");
 });
 
@@ -102,7 +108,7 @@ app.post('/login', (req, res) => {
   for (let i in users){
     if (req.body.email === users[i].email){
       if(bcrypt.compareSync(req.body.password, users[i].password)){
-        res.session.user_id = i;
+        req.session.user_id = i;
         res.redirect('/')
       }
       else {
@@ -115,7 +121,11 @@ app.post('/login', (req, res) => {
 
 //handle login page GET
 app.get("/login", (req, res) => {
-  res.render("login")
+  if (!req.session.user_id){
+    res.render("login")
+  } else{
+    res.redirect('/urls')
+  }
 });
 
 //generate random String Function
@@ -130,8 +140,10 @@ function generateRandomString(){
 
 //single url page with 404 functionality
 app.get("/urls/:id", (req, res) => {
-  if (!urlDatabase[req.params.id]){
-    res.redirect("/404")
+  if (!req.session.user_id){
+    res.end("You must be logged in to use this feature")
+  } else if (!urlDatabase[req.params.id]){
+    res.end("This Short URL does not exist")
   } else {
     if (urlDatabase[req.params.id].userID === req.session.user_id){
       let templateVars = { shortURL: req.params.id,
@@ -139,7 +151,7 @@ app.get("/urls/:id", (req, res) => {
        user: users[req.session.user_id]};
       res.render("urls_show", templateVars);
     } else {
-      res.redirect('/login');
+      res.redirect('You do not own this shortURL');
     }
   }
 });
@@ -162,12 +174,14 @@ app.post('/urls/:id/update', (req, res) =>{
 
 //redirect short links
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
-  if (longURL == undefined) {
+  if (!urlDatabase[req.params.shortURL]){
     console.log("Client entered an incorrect shortURL")
     res.send("You entered an incorrect shortURL!\n")
-  } else {console.log(`Redirected client to: ${longURL}`)
-  res.redirect(longURL);
+  }
+  else {
+    let longURL = urlDatabase[req.params.shortURL].longURL;
+    console.log(`Redirected client to: ${longURL}`)
+    res.redirect(longURL);
   }
 });
 
@@ -195,8 +209,6 @@ app.post('/register', (req, res) =>{
     email: req.body.email,
     password: hashed_password
   };
-  console.log(password)
-  console.log(user.password)
   users[user.id] = user;
   req.session.user_id = user.id;
   res.redirect('/urls');
