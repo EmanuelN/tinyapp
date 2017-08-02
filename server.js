@@ -120,17 +120,25 @@ app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]){
     res.redirect("/404")
   } else {
-  let templateVars = { shortURL: req.params.id,
-  longURL: urlDatabase[req.params.id],
-  user: users[req.cookies.user_id]};
-  res.render("urls_show", templateVars);
+    if (urlDatabase[req.params.id].userID === req.cookies.user_id){
+      let templateVars = { shortURL: req.params.id,
+       longURL: urlDatabase[req.params.id].longURL,
+       user: users[req.cookies.user_id]};
+      res.render("urls_show", templateVars);
+    } else {
+      res.redirect('/login');
+    }
   }
 });
 
 //delete URL resource
 app.post('/urls/:id/delete', (req, res) =>{
-  delete urlDatabase[req.params.id];
-  res.redirect('/urls')
+  if (urlDatabase[req.params.id]['userID'] === req.cookies.user_id){
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls')
+  } else{
+    res.redirect('/login')
+  }
 });
 
 //modify URL resource
