@@ -9,12 +9,14 @@
   </header>
   <ul>
     <% for (let i in urls) { %>
+    <% if (urls[i].userID == user.id) {%>
     <li> <%= i %> - <%= urls[i]['longURL'] %>
     <form method="POST" action="/urls/<%= i %>/delete">
       <a href="/urls/<%= i %>">Edit</a>
       <button name="delete">Delete</button>
     </form>
     </li>
+    <% } %>
     <% } %>
   </ul>
 </body>
