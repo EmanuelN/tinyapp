@@ -146,9 +146,9 @@ function generateRandomString(){
 //single url page with 404 functionality
 app.get("/urls/:id", (req, res) => {
   if (!req.session.user_id){
-    res.redirect("/please")
+    res.redirect("/please");
   } else if (!urlDatabase[req.params.id]){
-    res.end("<html><body>This short URL does not exist</body></html>")
+    res.end("<html><body>This short URL does not exist</body></html>");
   } else {
     if (urlDatabase[req.params.id].userID === req.session.user_id){
       let templateVars = { shortURL: req.params.id,
@@ -163,11 +163,13 @@ app.get("/urls/:id", (req, res) => {
 
 //delete URL resource
 app.post('/urls/:id/delete', (req, res) =>{
-  if (urlDatabase[req.params.id]['userID'] === req.session.user_id){
+  if (!req.session.user_id){
+    res.redirect('/please');
+  } else if (urlDatabase[req.params.id]['userID'] === req.session.user_id){
     delete urlDatabase[req.params.id];
     res.redirect('/urls')
   } else{
-    res.redirect('/login')
+    res.redirect('<html><body>You do not own this URL and cannot delete it</body></html>')
   }
 });
 
