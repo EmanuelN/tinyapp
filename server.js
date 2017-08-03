@@ -172,9 +172,15 @@ app.post('/urls/:id/delete', (req, res) =>{
 });
 
 //modify URL resource
-app.post('/urls/:id/update', (req, res) =>{
-  urlDatabase[req.params.id] = req.body.url;
-  res.redirect(`/urls/${req.params.id}`);
+app.post('/urls/:id', (req, res) =>{
+  if (!req.session.user_id){
+    res.redirect('please');
+  } else if (urlDatabase[req.params.id].userID === req.session.user_id){
+    urlDatabase[req.params.id].longURL = req.body.url;
+    res.redirect(`/urls`);
+  } else {
+    res.end("<html><body>You do not own this URL and cannot modify it</body></html>")
+  }
 });
 
 //redirect short links
