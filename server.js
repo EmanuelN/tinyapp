@@ -60,10 +60,14 @@ app.get('/urls', (req, res) =>{
     };
     res.render("urls_index", templateVars);
   } else {
-    res.end("You must be logged in to use this feature")
+    res.redirect("/please")
   }
 });
 
+//Please login page
+app.get("/please", (req, res)=>{
+  res.render('please')
+})
 //add urls page
 app.get('/urls/new', (req, res) => {
   if (!req.session.user_id){
@@ -138,7 +142,7 @@ function generateRandomString(){
 //single url page with 404 functionality
 app.get("/urls/:id", (req, res) => {
   if (!req.session.user_id){
-    res.end("You must be logged in to use this feature")
+    res.redirect("/please")
   } else if (!urlDatabase[req.params.id]){
     res.end("This Short URL does not exist")
   } else {
