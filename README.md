@@ -4,7 +4,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["URL Index Page"](#)
+!["URL Index Page"](https://github.com/EmanuelN/tinyapp/blob/master/docs/urls-index-page.png)
 ## Dependencies
 
 - Node.js
