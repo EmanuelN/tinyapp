@@ -109,11 +109,11 @@ app.post('/login', (req, res) => {
         res.redirect('/')
       }
       else {
-        res.status(403).send("wrong password!")
+        res.status(403).end("wrong password!")
       }
     }
   }
-   res.status(403).send("wrong email!")
+   res.status(403).end("wrong email!")
 });
 
 //handle login page GET
