@@ -89,6 +89,9 @@ app.post("/logout", (req, res) => {
 
 //add urls POST
 app.post('/urls', (req, res) => {
+  if (!req.session.user_id){
+    res.end("<html><body>You must be logged in to use this feature</body></html>")
+  } else {
   console.log(`User ${req.session.user_id} created a new url`)
   let id = generateRandomString()
   urlDatabase[id] = {longURL: req.body.longURL,
@@ -99,6 +102,7 @@ app.post('/urls', (req, res) => {
     };
     //redirect to id's page
   res.render('urls_show', templateVars);
+  }
 });
 
 //handle login POST
@@ -177,7 +181,7 @@ app.post('/urls/:id/update', (req, res) =>{
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]){
     console.log("Client entered an incorrect shortURL")
-    res.send("You entered an incorrect shortURL!\n")
+    res.send("<html><body>You entered an incorrect shortURL.</body></html>")
   }
   else {
     let longURL = urlDatabase[req.params.shortURL].longURL;
