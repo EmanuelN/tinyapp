@@ -144,7 +144,7 @@ app.get("/urls/:id", (req, res) => {
   if (!req.session.user_id){
     res.redirect("/please")
   } else if (!urlDatabase[req.params.id]){
-    res.end("This Short URL does not exist")
+    res.end("<html><body>This short URL does not exist</body></html>")
   } else {
     if (urlDatabase[req.params.id].userID === req.session.user_id){
       let templateVars = { shortURL: req.params.id,
@@ -152,7 +152,7 @@ app.get("/urls/:id", (req, res) => {
        user: users[req.session.user_id]};
       res.render("urls_show", templateVars);
     } else {
-      res.redirect('You do not own this shortURL');
+      res.end('<html><body>You do not own this shortURL</body></html>');
     }
   }
 });
