@@ -94,28 +94,40 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+//check if longURL already exists
+function checkURL(url, obj){
+  for (let key in obj){
+    if (url === obj[key].longURL){
+      return true;
+    }
+  }
+  return false;
+};
+
 //add urls POST
 app.post('/urls', (req, res) => {
   if (!req.session.user_id){
     res.end("<html><body>You must be logged in to use this feature</body></html>")
+  } else if (checkURL(req.body.longURL, urlDatabase)){
+    res.redirect("/urls");
   } else {
-  console.log(`User ${req.session.user_id} created a new url`)
-  let id = generateRandomString()
-  urlDatabase[id] = {longURL: req.body.longURL,
-    userID: req.session.user_id,
-    date: date,
-    clicks: 0,
-    uniqueClicks: []
-  };
-  let templateVars = { shortURL: id,
-    longURL: req.body.longURL,
-    user: users[req.session.user_id],
-    date: urlDatabase[id].date,
-    clicks: urlDatabase[id].clicks,
-    uniqueClicks: urlDatabase[id].uniqueClicks.length
+    let id = generateRandomString()
+    urlDatabase[id] = {longURL: req.body.longURL,
+      userID: req.session.user_id,
+      date: date,
+      clicks: 0,
+      uniqueClicks: []
     };
-    //redirect to id's page
-  res.render('urls_show', templateVars);
+    console.log(`User ${req.session.user_id} created a new url`)
+    let templateVars = { shortURL: id,
+      longURL: req.body.longURL,
+      user: users[req.session.user_id],
+      date: urlDatabase[id].date,
+      clicks: urlDatabase[id].clicks,
+      uniqueClicks: urlDatabase[id].uniqueClicks.length
+      };
+      //redirect to id's page
+    res.render('urls_show', templateVars);
   }
 });
 
