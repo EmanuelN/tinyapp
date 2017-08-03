@@ -103,11 +103,13 @@ app.post('/urls', (req, res) => {
   let id = generateRandomString()
   urlDatabase[id] = {longURL: req.body.longURL,
     userID: req.session.user_id,
-    date: date};
+    date: date,
+    clicks: 0};
   let templateVars = { shortURL: id,
     longURL: req.body.longURL,
     user: users[req.session.user_id],
-    date: urlDatabase[id].date
+    date: urlDatabase[id].date,
+    clicks: urlDatabase[id].clicks
     };
     //redirect to id's page
   res.render('urls_show', templateVars);
@@ -160,7 +162,8 @@ app.get("/urls/:id", (req, res) => {
       let templateVars = { shortURL: req.params.id,
         longURL: urlDatabase[req.params.id].longURL,
         user: users[req.session.user_id],
-        date: urlDatabase[req.params.id].date};
+        date: urlDatabase[req.params.id].date,
+        clicks: urlDatabase[req.params.id].clicks};
       res.render("urls_show", templateVars);
     } else {
       res.end('<html><body>You do not own this shortURL</body></html>');
@@ -199,6 +202,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.send("<html><body>You entered an incorrect shortURL.</body></html>")
   }
   else {
+    urlDatabase[req.params.shortURL].clicks ++;
     let longURL = urlDatabase[req.params.shortURL].longURL;
     console.log(`Redirected client to: ${longURL}`)
     res.redirect(longURL);

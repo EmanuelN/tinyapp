@@ -10,7 +10,7 @@
   <h3>List of URLS</h3>
   <ul>
     <% for (let i in urls) { %>
-    <li> <%= i %> - <%= urls[i].longURL %> - Created: <%= urls[i].date %>
+    <li> <%= i %> - <%= urls[i].longURL %> - Created: <%= urls[i].date %> Visits: <%= urls[i].clicks %>
     <form method="POST" action="/urls/<%= i %>/delete">
       <a href="/urls/<%= i %>">Edit</a>
       <button name="delete">Delete</button>
