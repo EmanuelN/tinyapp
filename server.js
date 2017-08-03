@@ -32,7 +32,14 @@ const urlDatabase = {
 const users = {
 
 };
+//today's date generator
+const today = new Date();
+const day = today.getUTCDate();
+const month = today.getUTCMonth();
+const year = today.getUTCFullYear();
+const date = `${month+1}/${day}/${year}`
 
+//root directory
 app.get("/", (req,res) =>{
   if (req.session.user_id){
     res.redirect('/urls');
@@ -46,7 +53,7 @@ function urlsForUser(id){
   let obj = {}
   for (let i in urlDatabase){
     if (id === urlDatabase[i].userID){
-      obj[i] = urlDatabase[i].longURL;
+      obj[i] = urlDatabase[i];
     }
   }
   return obj;
@@ -95,10 +102,12 @@ app.post('/urls', (req, res) => {
   console.log(`User ${req.session.user_id} created a new url`)
   let id = generateRandomString()
   urlDatabase[id] = {longURL: req.body.longURL,
-    userID: req.session.user_id}
+    userID: req.session.user_id,
+    date: date};
   let templateVars = { shortURL: id,
     longURL: req.body.longURL,
-    user: users[req.session.user_id]
+    user: users[req.session.user_id],
+    date: urlDatabase[id].date
     };
     //redirect to id's page
   res.render('urls_show', templateVars);
@@ -149,8 +158,9 @@ app.get("/urls/:id", (req, res) => {
   } else {
     if (urlDatabase[req.params.id].userID === req.session.user_id){
       let templateVars = { shortURL: req.params.id,
-       longURL: urlDatabase[req.params.id].longURL,
-       user: users[req.session.user_id]};
+        longURL: urlDatabase[req.params.id].longURL,
+        user: users[req.session.user_id],
+        date: urlDatabase[req.params.id].date};
       res.render("urls_show", templateVars);
     } else {
       res.end('<html><body>You do not own this shortURL</body></html>');
