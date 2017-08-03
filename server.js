@@ -108,20 +108,17 @@ app.post('/urls', (req, res) => {
 //handle login POST
 app.post('/login', (req, res) => {
   if (req.body.email != "" || req.body.password != ""){
-  console.log(`User ${req.body.email} is attempting to log in`);
+  console.log(`Login attempt by ${req.body.email}`);
   }
   for (let i in users){
     if (req.body.email === users[i].email){
       if(bcrypt.compareSync(req.body.password, users[i].password)){
         req.session.user_id = i;
-        res.redirect('/')
-      }
-      else {
-        res.status(403).end("wrong password!")
+        res.redirect('/urls')
       }
     }
   }
-   res.status(403).end("wrong email!")
+   res.status(403).end("<html><body>Email and/or password are incorrect</body></html>")
 });
 
 //handle login page GET
@@ -200,8 +197,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 //registration page
 app.get("/register", (req, res) =>{
-  res.render("register")
-})
+  if (!req.session.user_id){
+    res.render("register");
+  } else {
+    res.redirect('/urls');
+  }
+});
 
 //registration POST
 app.post('/register', (req, res) =>{
