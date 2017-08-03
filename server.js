@@ -208,12 +208,12 @@ app.get("/register", (req, res) =>{
 app.post('/register', (req, res) =>{
   //if email or password is empty return error 400
   if (req.body.email == "" || req.body.password == ""){
-    res.status(400).send("You need to fill both those fields!")
+    res.status(400).send("<html><body>Please fill in both fields</body></html>")
   } else {
     //if email already registered return error 400
   for (let i in users){
     if (users[i].email === req.body.email){
-      res.status(400).end("Email already registered!")
+      res.status(400).end("Email has already been registered")
     }
   }
   //else create user
