@@ -104,12 +104,15 @@ app.post('/urls', (req, res) => {
   urlDatabase[id] = {longURL: req.body.longURL,
     userID: req.session.user_id,
     date: date,
-    clicks: 0};
+    clicks: 0,
+    uniqueClicks: []
+  };
   let templateVars = { shortURL: id,
     longURL: req.body.longURL,
     user: users[req.session.user_id],
     date: urlDatabase[id].date,
-    clicks: urlDatabase[id].clicks
+    clicks: urlDatabase[id].clicks,
+    uniqueClicks: urlDatabase[id].uniqueClicks.length
     };
     //redirect to id's page
   res.render('urls_show', templateVars);
@@ -163,7 +166,8 @@ app.get("/urls/:id", (req, res) => {
         longURL: urlDatabase[req.params.id].longURL,
         user: users[req.session.user_id],
         date: urlDatabase[req.params.id].date,
-        clicks: urlDatabase[req.params.id].clicks};
+        clicks: urlDatabase[req.params.id].clicks,
+        uniqueClicks: urlDatabase[req.params.id].uniqueClicks.length};
       res.render("urls_show", templateVars);
     } else {
       res.end('<html><body>You do not own this shortURL</body></html>');
@@ -194,6 +198,19 @@ app.post('/urls/:id', (req, res) =>{
     res.end("<html><body>You do not own this URL and cannot modify it</body></html>")
   }
 });
+//check if user_id already present in uniqueClicks
+function checkUser(userID, array){
+  if (array.length === 0){
+    return true
+  }
+  for (let i in array){
+    if (array[i] === userID){
+      return false;
+    } else {
+      return true;
+    }
+  }
+};
 
 //redirect short links
 app.get("/u/:shortURL", (req, res) => {
@@ -202,7 +219,14 @@ app.get("/u/:shortURL", (req, res) => {
     res.send("<html><body>You entered an incorrect shortURL.</body></html>")
   }
   else {
+    let uniqueArr = urlDatabase[req.params.shortURL].uniqueClicks;
     urlDatabase[req.params.shortURL].clicks ++;
+    if (req.session.user_id){
+      console.log(`${req.session.user_id} is trying to access ${req.params.shortURL}`);
+      if (checkUser(req.session.user_id, uniqueArr)){
+        urlDatabase[req.params.shortURL].uniqueClicks.push(req.session.user_id)
+      }
+    }
     let longURL = urlDatabase[req.params.shortURL].longURL;
     console.log(`Redirected client to: ${longURL}`)
     res.redirect(longURL);
