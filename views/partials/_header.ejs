@@ -6,12 +6,12 @@
 
 <!-- login form -->
 <% if (user) { %>
-<p>Currently logged in as: <%= user.email %> </p>
-<form method="POST" action="/logout">
-  <button name="logout">Logout</button>
-</form>
+  <p>Currently logged in as: <%= user.email %> </p>
+  <form method="POST" action="/logout">
+    <button name="logout">Logout</button>
+  </form>
 <% } else { %>
-<div>Currently logged out</div>
-<a href="/register">Register</a>
-<a href="/login">Login</a>
+    <div>Currently logged out</div>
+    <a href="/register">Register</a>
+    <a href="/login">Login</a>
 <% } %>
