@@ -118,7 +118,8 @@ app.post('/urls', (req, res) => {
       userID: req.session.user_id,
       date: date,
       clicks: 0,
-      uniqueClicks: []
+      uniqueClicks: [],
+      visits: []
     };
     console.log(`User ${req.session.user_id} created a new url`)
     let templateVars = { shortURL: id,
@@ -126,7 +127,8 @@ app.post('/urls', (req, res) => {
       user: users[req.session.user_id],
       date: urlDatabase[id].date,
       clicks: urlDatabase[id].clicks,
-      uniqueClicks: urlDatabase[id].uniqueClicks.length
+      uniqueClicks: urlDatabase[id].uniqueClicks.length,
+      visits: []
       };
       //redirect to id's page
     res.render('urls_show', templateVars);
@@ -181,7 +183,8 @@ app.get("/urls/:id", (req, res) => {
         user: users[req.session.user_id],
         date: urlDatabase[req.params.id].date,
         clicks: urlDatabase[req.params.id].clicks,
-        uniqueClicks: urlDatabase[req.params.id].uniqueClicks.length};
+        uniqueClicks: urlDatabase[req.params.id].uniqueClicks.length,
+        visits: urlDatabase[req.params.id].visits};
       res.render("urls_show", templateVars);
     } else {
       res.end('<html><body>You do not own this shortURL</body></html>');
@@ -235,12 +238,15 @@ app.get("/u/:shortURL", (req, res) => {
   else {
     let uniqueArr = urlDatabase[req.params.shortURL].uniqueClicks;
     urlDatabase[req.params.shortURL].clicks ++;
-    if (req.session.user_id){
-      console.log(`${req.session.user_id} is trying to access ${req.params.shortURL}`);
-      if (checkUser(req.session.user_id, uniqueArr)){
-        urlDatabase[req.params.shortURL].uniqueClicks.push(req.session.user_id)
-      }
+    let uniqueVisitorId = generateRandomString();
+    if (!req.session.unique_visitor){
+      req.session.unique_visitor = uniqueVisitorId
+      urlDatabase[req.params.shortURL].uniqueClicks.push(req.session.unique_visitor);
     }
+    let now = new Date()
+    let timestamp = `${now.getUTCHours()}:${now.getUTCMinutes()}:${now.getUTCSeconds()}`
+    urlDatabase[req.params.shortURL].visits.push({timestamp: timestamp, visitor_id: req.session.unique_visitor});
+    console.log(urlDatabase[req.params.shortURL].visits)
     let longURL = urlDatabase[req.params.shortURL].longURL;
     console.log(`Redirected client to: ${longURL}`)
     res.redirect(longURL);

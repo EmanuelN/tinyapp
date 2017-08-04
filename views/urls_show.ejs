@@ -7,7 +7,12 @@
   <header>
     <% include ./partials/_header %>
   </header>
-  <p><%= shortURL %> - <%= longURL %> - Created: <%= date %> - Visits:<%= clicks %> - Unique visits: <%= uniqueClicks %></p>
+  <p><%= shortURL %> - <%= longURL %> - Created: <%= date %> - Visit Number:<%= clicks %> - Unique visits: <%= uniqueClicks %> - Visit info:
+  <% for (let i in visits) {%>
+    <br> Visit #<%= i %>
+    Time: <%= visits[i].timestamp %> Visitor: <%= visits[i].visitor_id %>
+    <% } %>
+  </p>
   <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
       Updated long URL: <input type="text" name="url">
       <button name="edit">Update</button>
