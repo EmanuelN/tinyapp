@@ -11,7 +11,7 @@
   <ul>
     <% for (let i in urls) { %>
     <li> <%= i %> - <%= urls[i].longURL %> - Created: <%= urls[i].date %> - Visits: <%= urls[i].clicks %> - Unique Visits: <%= urls[i].uniqueClicks.length %>
-    <form method="POST" action="/urls/<%= i %>/delete">
+    <form method="POST" action="/urls/<%= i %>?_method=DELETE">
       <a href="/urls/<%= i %>">Edit</a>
       <button name="delete">Delete</button>
     </form>

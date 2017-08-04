@@ -1,6 +1,7 @@
 //server.js
 const express = require('express');
 const app = express();
+const methodOverride = require('method-override');
 const cookieParser = require('cookie-session');
 app.use(cookieParser({
   name: 'session',
@@ -23,15 +24,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 //set view engine to ejs
 app.set('view engine', 'ejs');
 
-//our list of URLS
-const urlDatabase = {
+//methodOverride
+app.use(methodOverride('_method'));
 
-};
+
+//our list of URLS
+const urlDatabase = {};
 
 // users list
-const users = {
+const users = {};
 
-};
 //today's date generator
 const today = new Date();
 const day = today.getUTCDate();
@@ -188,7 +190,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 //delete URL resource
-app.post('/urls/:id/delete', (req, res) =>{
+app.delete('/urls/:id', (req, res) =>{
   if (!req.session.user_id){
     res.redirect('/please');
   } else if (urlDatabase[req.params.id]['userID'] === req.session.user_id){
@@ -200,7 +202,7 @@ app.post('/urls/:id/delete', (req, res) =>{
 });
 
 //modify URL resource
-app.post('/urls/:id', (req, res) =>{
+app.put('/urls/:id', (req, res) =>{
   if (!req.session.user_id){
     res.redirect('please');
   } else if (urlDatabase[req.params.id].userID === req.session.user_id){
